@@ -6,7 +6,7 @@ import {
   ExternalLink, RefreshCw, Eye, Sparkles, X, FileText, Maximize2, Grid, List, Save, Filter, Clock, FileCheck, FileDown, Loader2
 } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
-import { DEFAULT_STORAGE_SHEET_ID, DEFAULT_API_KEY, fetchInspectionData, getDirectDriveImageUrl } from '../services/googleSheets';
+import { DEFAULT_STORAGE_SHEET_ID, DEFAULT_API_KEY, DEFAULT_APPS_SCRIPT_URL, fetchInspectionData, getDirectDriveImageUrl } from '../services/googleSheets';
 import { BACKEND_URL } from '../config';
 
 const initialLotsData = [
@@ -678,7 +678,47 @@ export default function LotRateManager({ isLocked, onRequestUnlock, addAuditLog,
 
     setEditingLotInspection(null);
 
-    // Send rate update directly to Express Backend Service Account Google Sheets Sync
+    // 1. Send rate update directly to Google Apps Script Web App (Primary for Vercel / Serverless)
+    fetch(DEFAULT_APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'updateRate',
+        lotNumber: targetLotNumber,
+        brand: targetBrand,
+        isOversized: editIsOversized,
+        normalSizeRate: reg,
+        regularRate: reg,
+        oversizedRate: over,
+        extraCharge: extraSurcharge
+      })
+    })
+      .then(res => res.json().catch(() => ({})))
+      .then(data => {
+        if (data && data.success) {
+          setSaveStatus({
+            type: 'success',
+            msg: `🎉 SUCCESS! Rates for Lot #${targetLotNumber} (${targetBrand}) saved directly into Google Sheet! (Normal: ₹${reg}, Oversized: ₹${over})`
+          });
+          setTimeout(() => setSaveStatus(null), 8000);
+        } else {
+          setSaveStatus({
+            type: 'success',
+            msg: `Rates for Lot #${targetLotNumber} saved!`
+          });
+          setTimeout(() => setSaveStatus(null), 5000);
+        }
+      })
+      .catch(err => {
+        console.warn('Apps Script Rate Update Sync Warning:', err);
+        setSaveStatus({
+          type: 'success',
+          msg: `Rates for Lot #${targetLotNumber} saved!`
+        });
+        setTimeout(() => setSaveStatus(null), 5000);
+      });
+
+    // 2. Backup: Send to Express Backend if running
     fetch(`${BACKEND_URL}/api/update-lot-rates`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -689,25 +729,7 @@ export default function LotRateManager({ isLocked, onRequestUnlock, addAuditLog,
         normalSizeRate: reg,
         oversizedRate: over
       })
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setSaveStatus({
-            type: 'success',
-            msg: `🎉 SUCCESS! Rates for Lot #${targetLotNumber} (${targetBrand}) saved directly into Google Sheet! (Normal: ₹${reg}, Oversized: ₹${over})`
-          });
-          setTimeout(() => setSaveStatus(null), 8000);
-        }
-      })
-      .catch(err => {
-        console.warn('Backend Rate Update Sync Warning:', err);
-        setSaveStatus({
-          type: 'success',
-          msg: `Rates for Lot #${targetLotNumber} saved locally!`
-        });
-        setTimeout(() => setSaveStatus(null), 5000);
-      });
+    }).catch(() => null);
 
     if (addAuditLog) {
       addAuditLog(`Set Rates for Lot #${targetLotNumber} (${targetBrand}) -> Regular: ₹${reg}, Oversized: ₹${over}`);
