@@ -77,23 +77,26 @@ body {
   font-family: var(--font-mono);
 }
 
-/* App Container */
-.app-container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+/* TABLET & LAPTOP UNIVERSAL FULL-WIDTH LAYOUT OVERRIDES */
+html, body, #root, .app-container {
   width: 100% !important;
+  max-width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
 }
 
 .main-content {
   flex: 1;
   max-width: 100% !important;
   width: 100% !important;
-  margin: 0 auto;
-  padding: clamp(10px, 2vw, 20px);
+  margin: 0 !important;
+  padding: clamp(10px, 2.5vw, 24px) !important;
   display: flex;
   flex-direction: column;
   gap: clamp(14px, 2vw, 24px);
+  box-sizing: border-box !important;
 }
 
 /* FLUID LAPTOP & DESKTOP GRID CLASSES */

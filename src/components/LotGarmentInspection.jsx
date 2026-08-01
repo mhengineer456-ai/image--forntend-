@@ -324,6 +324,23 @@ export default function LotGarmentInspection({ lots, addAuditLog, isLocked, onRe
       return;
     }
 
+    // Strict Validation: User must capture or upload at least 1 photo for every brand entry before uploading data
+    for (let i = 0; i < brandItems.length; i++) {
+      const item = brandItems[i];
+      const itemPhotos = item.photos || [];
+      const isAutoSnapAvailable = (i === activeBrandIdx && isCameraActive && videoRef.current);
+
+      if (itemPhotos.length === 0 && !isAutoSnapAvailable) {
+        alert(`📷 PHOTO REQUIRED! Please capture or upload at least 1 image for Brand #${i + 1} (${item.brand || 'Unnamed'}) before uploading data.`);
+        setActiveBrandIdx(i);
+        setSaveBackendStatus({
+          type: 'warning',
+          msg: `📷 Photo required! Please capture or upload at least 1 image for Brand #${i + 1} (${item.brand || 'Unnamed'}) first.`
+        });
+        return;
+      }
+    }
+
     setIsSavingBackend(true);
     setSaveBackendStatus({ type: 'info', msg: `⚡ Uploading ${brandItems.length} Brand item(s) as separate rows to Google Drive & Google Sheet...` });
 
