@@ -969,28 +969,42 @@ export default function LotGarmentInspection({ lots, addAuditLog, isLocked, onRe
             </div>
           )}
 
-          {/* SUBMIT ALL BRAND ROWS BUTTON */}
-          <button
-            type="submit"
-            disabled={isSavingBackend}
-            className="btn btn-emerald"
-            style={{
-              padding: '16px 24px',
-              borderRadius: 14,
-              fontSize: '1rem',
-              fontWeight: 'bold',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 10,
-              boxShadow: '0 4px 14px rgba(16, 185, 129, 0.3)'
-            }}
-          >
-            <Upload style={{ width: 20, height: 20 }} />
-            {isSavingBackend 
-              ? 'UPLOADING ALL BRAND ROWS...' 
-              : `☁️ UPLOAD ALL (${brandItems.length}) BRAND ROWS TO GOOGLE SHEETS & DRIVE`}
-          </button>
+          {/* SUBMIT ALL BRAND ROWS BUTTON (DISABLED UNTIL AT LEAST 1 PHOTO IS ATTACHED) */}
+          {(() => {
+            const totalPhotosCount = brandItems.reduce((acc, b) => acc + (b.photos?.length || 0), 0);
+            const isSubmitDisabled = isSavingBackend || totalPhotosCount === 0;
+
+            return (
+              <button
+                type="submit"
+                disabled={isSubmitDisabled}
+                className={`btn ${totalPhotosCount > 0 ? 'btn-emerald' : 'btn-outline'}`}
+                style={{
+                  padding: '16px 24px',
+                  borderRadius: 14,
+                  fontSize: '1rem',
+                  fontWeight: 'bold',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 10,
+                  boxShadow: totalPhotosCount > 0 ? '0 4px 14px rgba(16, 185, 129, 0.3)' : 'none',
+                  opacity: totalPhotosCount === 0 ? 0.6 : 1,
+                  cursor: totalPhotosCount === 0 ? 'not-allowed' : 'pointer',
+                  background: totalPhotosCount === 0 ? '#f8fafc' : undefined,
+                  color: totalPhotosCount === 0 ? '#64748b' : undefined,
+                  border: totalPhotosCount === 0 ? '2px dashed #cbd5e1' : undefined
+                }}
+              >
+                <Upload style={{ width: 20, height: 20 }} />
+                {isSavingBackend 
+                  ? 'UPLOADING ALL BRAND ROWS...' 
+                  : totalPhotosCount === 0
+                    ? '📸 CAPTURE OR UPLOAD AT LEAST 1 PHOTO TO ENABLE SUBMIT'
+                    : `☁️ UPLOAD ALL (${brandItems.length}) BRAND ROWS TO GOOGLE SHEETS & DRIVE (${totalPhotosCount} Photo(s) Attached)`}
+              </button>
+            );
+          })()}
 
         </form>
 
