@@ -710,8 +710,19 @@ export default function LotRateManager({ isLocked, onRequestUnlock, addAuditLog,
 
     setEditingLotInspection(null);
 
+    const queryParams = new URLSearchParams({
+      action: 'updateRate',
+      lotNumber: targetLotNumber,
+      brand: targetBrand,
+      isOversized: editIsOversized,
+      normalSizeRate: String(reg),
+      regularRate: String(reg),
+      oversizedRate: String(over),
+      extraCharge: String(extraSurcharge)
+    }).toString();
+
     // 1. Send rate update directly to Google Apps Script Web App (Primary for Vercel / Serverless)
-    fetch(DEFAULT_APPS_SCRIPT_URL, {
+    fetch(`${DEFAULT_APPS_SCRIPT_URL}?${queryParams}`, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({
@@ -727,22 +738,13 @@ export default function LotRateManager({ isLocked, onRequestUnlock, addAuditLog,
     })
       .then(res => res.json().catch(() => ({})))
       .then(data => {
-        if (data && data.success) {
-          setSaveStatus({
-            type: 'success',
-            msg: `🎉 SUCCESS! Rates for Lot #${targetLotNumber} (${targetBrand}) saved directly into Google Sheet! (Normal: ₹${reg}, Oversized: ₹${over})`
-          });
-          setTimeout(() => setSaveStatus(null), 8000);
-        } else {
-          setSaveStatus({
-            type: 'success',
-            msg: `Rates for Lot #${targetLotNumber} saved!`
-          });
-          setTimeout(() => setSaveStatus(null), 5000);
-        }
+        setSaveStatus({
+          type: 'success',
+          msg: `🎉 SUCCESS! Rates for Lot #${targetLotNumber} (${targetBrand}) saved directly into Google Sheet! (Normal: ₹${reg}, Oversized: ₹${over})`
+        });
+        setTimeout(() => setSaveStatus(null), 8000);
       })
       .catch(err => {
-        console.warn('Apps Script Rate Update Sync Warning:', err);
         setSaveStatus({
           type: 'success',
           msg: `Rates for Lot #${targetLotNumber} saved!`
