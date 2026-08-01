@@ -148,7 +148,7 @@ export default function App() {
           </main>
 
           <footer className="no-print" style={{ borderTop: '1px solid var(--border-light)', background: '#ffffff', padding: '16px 24px', textAlign: 'center', fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-            <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+            <div style={{ width: '100%', margin: '0 auto', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
               <div>
                 <strong style={{ color: 'var(--accent-primary)' }}>Garment Rate Vault &copy; {new Date().getFullYear()}</strong> — Sheet ID: <span style={{ color: 'var(--text-main)' }}>{sheetId.slice(0, 12)}...</span>
               </div>
