@@ -224,8 +224,24 @@ export default function LotRateManager({ isLocked, onRequestUnlock, addAuditLog,
             if (sheetLot) {
               const lotStr = String(sheetLot).trim();
               const isOver = sheetItem['oversized'] || 'NO';
-              const normRate = Number(sheetItem['normal size rate'] || sheetItem['normal_size_rate'] || sheetItem['normal rate'] || sheetItem['regular rate'] || sheetItem['rate']) || 0;
-              const overRate = Number(sheetItem['oversized rate'] || sheetItem['oversized_rate'] || sheetItem['oversize rate']) || (isOver === 'YES' ? normRate : 0);
+              let normRate = Number(sheetItem['normal size rate'] || sheetItem['normal_size_rate'] || sheetItem['normal rate'] || sheetItem['regular rate'] || sheetItem['rate']) || 0;
+              let overRate = Number(sheetItem['oversized rate'] || sheetItem['oversized_rate'] || sheetItem['oversize rate']) || 0;
+
+              const notesStr = String(sheetItem['oversize notes'] || sheetItem['notes'] || sheetItem['oversize_notes'] || '');
+              if (normRate === 0 && notesStr) {
+                const normMatch = notesStr.match(/Normal:\s*₹?(\d+(\.\d+)?)/i) || notesStr.match(/Regular:\s*₹?(\d+(\.\d+)?)/i);
+                if (normMatch && normMatch[1]) {
+                  normRate = Number(normMatch[1]);
+                }
+              }
+              if (overRate === 0 && notesStr) {
+                const overMatch = notesStr.match(/Oversized:\s*₹?(\d+(\.\d+)?)/i) || notesStr.match(/Oversize:\s*₹?(\d+(\.\d+)?)/i);
+                if (overMatch && overMatch[1]) {
+                  overRate = Number(overMatch[1]);
+                } else {
+                  overRate = normRate;
+                }
+              }
 
               merged.push({
                 id: 'sheet-insp-' + Math.random(),
@@ -529,8 +545,24 @@ export default function LotRateManager({ isLocked, onRequestUnlock, addAuditLog,
           if (sheetLot) {
             const lotStr = String(sheetLot).trim();
             const isOver = sheetItem['oversized'] || 'NO';
-            const normRate = Number(sheetItem['normal size rate'] || sheetItem['normal_size_rate'] || sheetItem['normal rate'] || sheetItem['regular rate'] || sheetItem['rate']) || 0;
-            const overRate = Number(sheetItem['oversized rate'] || sheetItem['oversized_rate'] || sheetItem['oversize rate']) || (isOver === 'YES' ? normRate : 0);
+            let normRate = Number(sheetItem['normal size rate'] || sheetItem['normal_size_rate'] || sheetItem['normal rate'] || sheetItem['regular rate'] || sheetItem['rate']) || 0;
+            let overRate = Number(sheetItem['oversized rate'] || sheetItem['oversized_rate'] || sheetItem['oversize rate']) || 0;
+
+            const notesStr = String(sheetItem['oversize notes'] || sheetItem['notes'] || sheetItem['oversize_notes'] || '');
+            if (normRate === 0 && notesStr) {
+              const normMatch = notesStr.match(/Normal:\s*₹?(\d+(\.\d+)?)/i) || notesStr.match(/Regular:\s*₹?(\d+(\.\d+)?)/i);
+              if (normMatch && normMatch[1]) {
+                normRate = Number(normMatch[1]);
+              }
+            }
+            if (overRate === 0 && notesStr) {
+              const overMatch = notesStr.match(/Oversized:\s*₹?(\d+(\.\d+)?)/i) || notesStr.match(/Oversize:\s*₹?(\d+(\.\d+)?)/i);
+              if (overMatch && overMatch[1]) {
+                overRate = Number(overMatch[1]);
+              } else {
+                overRate = normRate;
+              }
+            }
 
             merged.push({
               id: 'sheet-insp-' + Math.random(),
