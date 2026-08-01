@@ -86,8 +86,8 @@ body {
 
 .main-content {
   flex: 1;
-  max-width: 1600px;
-  width: 96%;
+  max-width: 100%;
+  width: 98%;
   margin: 0 auto;
   padding: clamp(12px, 2vw, 24px);
   display: flex;
@@ -121,7 +121,7 @@ body {
 }
 
 .navbar-inner {
-  max-width: 1600px;
+  max-width: 100%;
   width: 100%;
   margin: 0 auto;
   display: flex;

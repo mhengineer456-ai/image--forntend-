@@ -171,25 +171,46 @@ export default function LotGarmentInspection({ lots, addAuditLog, isLocked, onRe
         currentStream.getTracks().forEach(track => track.stop());
       }
 
-      let stream;
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { exact: modeToUse }, width: { ideal: 1280 }, height: { ideal: 720 } }
-        });
-      } catch (e) {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: modeToUse, width: { ideal: 1280 }, height: { ideal: 720 } }
-        });
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera API not available. Please make sure the website is loaded over HTTPS.');
       }
 
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
+      const constraintsOptions = [
+        { video: { facingMode: { exact: modeToUse }, width: { ideal: 1280 }, height: { ideal: 720 } } },
+        { video: { facingMode: modeToUse, width: { ideal: 1280 }, height: { ideal: 720 } } },
+        { video: { facingMode: modeToUse } },
+        { video: true }
+      ];
+
+      let stream = null;
+      for (const constraints of constraintsOptions) {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia(constraints);
+          if (stream) break;
+        } catch (e) {
+          // try next constraint
+        }
       }
+
+      if (!stream) {
+        throw new Error('Unable to access camera on this device.');
+      }
+
       setIsCameraActive(true);
+
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.setAttribute('playsinline', 'true');
+          videoRef.current.setAttribute('webkit-playsinline', 'true');
+          videoRef.current.muted = true;
+          videoRef.current.play().catch(pErr => console.warn('Video play note:', pErr));
+        }
+      }, 100);
+
     } catch (err) {
       console.error("Camera error:", err);
-      setCameraError('Unable to access camera device. Try using the photo upload button instead.');
+      setCameraError(err.message || 'Unable to access camera device. Try using the photo upload button instead.');
       setIsCameraActive(false);
     }
   };
