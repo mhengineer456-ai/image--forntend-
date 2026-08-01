@@ -7,7 +7,7 @@ import SplashScreen from './components/SplashScreen';
 import SecurityLock from './components/SecurityLock';
 import AuditLogModal from './components/AuditLogModal';
 import GoogleSheetsSettingsModal from './components/GoogleSheetsSettingsModal';
-import { DEFAULT_SHEET_ID, DEFAULT_API_KEY } from './services/googleSheets';
+import { DEFAULT_SHEET_ID, DEFAULT_JOBORDER_SHEET_ID, DEFAULT_API_KEY } from './services/googleSheets';
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
