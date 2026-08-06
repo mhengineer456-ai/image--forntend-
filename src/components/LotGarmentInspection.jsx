@@ -176,7 +176,9 @@ export default function LotGarmentInspection({ lots, addAuditLog, isLocked, onRe
       }
 
       const constraintsOptions = [
-        { video: { facingMode: { exact: modeToUse }, width: { ideal: 1280 }, height: { ideal: 720 } } },
+        { video: { facingMode: { exact: modeToUse }, width: { ideal: 3840 }, height: { ideal: 2160 } } },
+        { video: { facingMode: { exact: modeToUse }, width: { ideal: 1920 }, height: { ideal: 1080 } } },
+        { video: { facingMode: modeToUse, width: { ideal: 1920 }, height: { ideal: 1080 } } },
         { video: { facingMode: modeToUse, width: { ideal: 1280 }, height: { ideal: 720 } } },
         { video: { facingMode: modeToUse } },
         { video: true }
@@ -231,7 +233,7 @@ export default function LotGarmentInspection({ lots, addAuditLog, isLocked, onRe
     setIsCameraActive(false);
   };
 
-  const compressImageDataUrl = (srcDataUrl, maxDim = 800, quality = 0.65) => {
+  const compressImageDataUrl = (srcDataUrl, maxDim = 2048, quality = 0.92) => {
     return new Promise((resolve) => {
       const img = new Image();
       img.onload = () => {
@@ -265,9 +267,9 @@ export default function LotGarmentInspection({ lots, addAuditLog, isLocked, onRe
       const video = videoRef.current;
       const canvas = canvasRef.current;
 
-      const maxDim = 800;
-      let width = video.videoWidth || 640;
-      let height = video.videoHeight || 480;
+      const maxDim = 2048;
+      let width = video.videoWidth || 1920;
+      let height = video.videoHeight || 1080;
 
       if (width > maxDim || height > maxDim) {
         if (width > height) {
@@ -285,7 +287,7 @@ export default function LotGarmentInspection({ lots, addAuditLog, isLocked, onRe
       const ctx = canvas.getContext('2d');
       ctx.drawImage(video, 0, 0, width, height);
 
-      const photoDataUrl = canvas.toDataURL('image/jpeg', 0.65);
+      const photoDataUrl = canvas.toDataURL('image/jpeg', 0.92);
       updateCurrentBrandItem({
         photos: [photoDataUrl, ...(currentBrandItem.photos || [])]
       });
@@ -297,7 +299,7 @@ export default function LotGarmentInspection({ lots, addAuditLog, isLocked, onRe
     files.forEach(file => {
       const reader = new FileReader();
       reader.onloadend = async () => {
-        const compressed = await compressImageDataUrl(reader.result, 800, 0.65);
+        const compressed = await compressImageDataUrl(reader.result, 2048, 0.92);
         updateCurrentBrandItem({
           photos: [compressed, ...(currentBrandItem.photos || [])]
         });
@@ -357,9 +359,9 @@ export default function LotGarmentInspection({ lots, addAuditLog, isLocked, onRe
         try {
           const video = videoRef.current;
           const canvas = canvasRef.current;
-          const maxDim = 800;
-          let width = video.videoWidth || 640;
-          let height = video.videoHeight || 480;
+          const maxDim = 2048;
+          let width = video.videoWidth || 1920;
+          let height = video.videoHeight || 1080;
 
           if (width > maxDim || height > maxDim) {
             if (width > height) {
@@ -375,7 +377,7 @@ export default function LotGarmentInspection({ lots, addAuditLog, isLocked, onRe
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(video, 0, 0, width, height);
-          photosToSend = [canvas.toDataURL('image/jpeg', 0.65)];
+          photosToSend = [canvas.toDataURL('image/jpeg', 0.92)];
         } catch (snapErr) {
           console.warn('Auto snapshot note:', snapErr);
         }

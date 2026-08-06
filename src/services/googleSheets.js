@@ -26,7 +26,7 @@ export const getDirectDriveImageUrl = (url) => {
   }
   
   if (fileId) {
-    return `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`;
+    return `https://drive.google.com/thumbnail?id=${fileId}&sz=w2000`;
   }
 
   return firstUrl;

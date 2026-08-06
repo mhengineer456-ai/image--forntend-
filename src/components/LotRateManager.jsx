@@ -1115,7 +1115,7 @@ export default function LotRateManager({ isLocked, onRequestUnlock, addAuditLog,
                       else if (item.url.includes('/d/')) fileId = item.url.split('/d/')[1]?.split('=')[0]?.split('/')[0];
                       
                       if (fileId && !e.target.src.includes('lh3.googleusercontent')) {
-                        e.target.src = `https://lh3.googleusercontent.com/d/${fileId}=w800`;
+                        e.target.src = `https://lh3.googleusercontent.com/d/${fileId}=w2000`;
                       }
                     }}
                   />
@@ -1764,7 +1764,7 @@ export default function LotRateManager({ isLocked, onRequestUnlock, addAuditLog,
                   else if (previewPhotoUrl.includes('/d/')) fileId = previewPhotoUrl.split('/d/')[1]?.split('=')[0]?.split('/')[0];
                   
                   if (fileId && !e.target.src.includes('lh3.googleusercontent')) {
-                    e.target.src = `https://lh3.googleusercontent.com/d/${fileId}=w800`;
+                    e.target.src = `https://lh3.googleusercontent.com/d/${fileId}=w2000`;
                   }
                 }}
               />
